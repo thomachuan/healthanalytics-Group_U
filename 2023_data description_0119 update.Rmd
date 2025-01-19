@@ -310,6 +310,90 @@ summary_table
 
 
 ```{r}
+library(dplyr)
+library(haven)
+library(gtsummary)
+
+# Combine levels of education into new categories
+female_data <- female_data %>%
+  mutate(
+    UHRSWORK = as.numeric(UHRSWORK),
+    INCTOT = as.numeric(INCTOT),
+    AGE = as.numeric(AGE),
+    age_group = factor(age_group, levels = c("young", "middle", "older")),
+    educ_level = factor(
+      educ_level,
+      levels = c(
+        "N/A or no schooling",
+        "Nursery school to grade 4",
+        "Grade 5, 6, 7, or 8",
+        "Grade 9",
+        "Grade 10",
+        "Grade 11",
+        "Grade 12",
+        "1 year of college",
+        "2 years of college",
+        "3 years of college",
+        "4 years of college",
+        "5+ years of college"
+      )
+    ),
+    educ_level_grouped = case_when(
+      educ_level %in% c(
+        "N/A or no schooling",
+        "Nursery school to grade 4",
+        "Grade 5, 6, 7, or 8",
+        "Grade 9"
+      ) ~ "low education",
+      educ_level %in% c(
+        "Grade 10",
+        "Grade 11",
+        "Grade 12"
+      ) ~ "medium education",
+      educ_level %in% c(
+        "1 year of college",
+        "2 years of college",
+        "3 years of college",
+        "4 years of college",
+        "5+ years of college"
+      ) ~ "high education",
+      TRUE ~ NA_character_
+    ),
+    educ_level_grouped = factor(
+      educ_level_grouped,
+      levels = c("low education", "medium education", "high education")
+    )
+  )
+
+# Generate a summary table with the grouped education levels
+summary_table <- female_data %>%
+  tbl_summary(
+    include = c(UHRSWORK, INCTOT, AGE, metro_type, educ_level_grouped),
+    by = age_group,
+    label = list(
+      UHRSWORK ~ "Weekly working hours",
+      INCTOT ~ "Income",
+      AGE ~ "Age",
+      metro_type ~ "Metropolitan status",
+      educ_level_grouped ~ "Education level"
+    ),
+    statistic = list(all_continuous() ~ "{mean} ({sd})"),
+    digits = list(all_continuous() ~ 2)
+  ) %>%
+  add_p() %>%
+  add_overall() %>%
+  modify_header(label ~ "**Characteristic**") %>%
+  modify_footnote(
+    all_stat_cols() ~ "Mean (SD); n (%)"
+  )
+
+# Print the summary table
+summary_table
+
+```
+
+
+```{r}
 # Calculate the average number of children and age-specific fertility rate for each age
 age_tfr <- female_data %>%
   group_by(AGE) %>%
