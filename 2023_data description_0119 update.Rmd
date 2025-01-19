@@ -183,11 +183,6 @@ grid.arrange(p1, p2, ncol = 2)
 
 ```
 
-
-
-
-
-
 ```{r, include=TRUE}
 #age groups filter
 female_data <- data %>%
@@ -244,67 +239,6 @@ female_data <- data %>%
     ),
     NCHILD_category = ifelse(NCHILD == 0, 0, 1)
     )
-
-```
-
-
-
-
-```{r}
-library(dplyr)
-library(haven)
-library(gtsummary)
-
-# Convert variables
-female_data <- female_data %>%
-  mutate(
-    UHRSWORK = as.numeric(UHRSWORK),
-    INCTOT = as.numeric(INCTOT),
-    AGE = as.numeric(AGE),
-    age_group = factor(age_group, levels = c("young", "middle", "older")),
-    educ_level = factor(
-      educ_level,
-      levels = c(
-        "N/A or no schooling",
-        "Nursery school to grade 4",
-        "Grade 5, 6, 7, or 8",
-        "Grade 9",
-        "Grade 10",
-        "Grade 11",
-        "Grade 12",
-        "1 year of college",
-        "2 years of college",
-        "3 years of college",
-        "4 years of college",
-        "5+ years of college"
-      )
-    )
-  )
-
-# Generate a summary table
-summary_table <- female_data %>%
-  tbl_summary(
-    include = c(UHRSWORK, INCTOT, AGE, metro_type, educ_level),
-    by = age_group,
-    label = list(
-      UHRSWORK ~ "Weekly working hours",
-      INCTOT ~ "Income",
-      AGE ~ "Age",
-      metro_type ~ "Metropolitan status",
-      educ_level ~ "Education level"
-    ),
-    statistic = list(all_continuous() ~ "{mean} ({sd})"),
-    digits = list(all_continuous() ~ 2)
-  ) %>%
-  add_p() %>%
-  add_overall() %>%
-  modify_header(label ~ "**Characteristic**") %>%  
-  modify_footnote(
-    all_stat_cols() ~ "Mean (SD); n (%)" 
-  )
-
-
-summary_table
 
 ```
 
@@ -476,9 +410,6 @@ print(models_by_metro)
 
 print("\ndifferent metro types:")
 print(complex_analysis)
-
-```
-
 
 ```
 
