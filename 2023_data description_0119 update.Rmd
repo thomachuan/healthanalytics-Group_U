@@ -255,23 +255,7 @@ female_data <- female_data %>%
     INCTOT = as.numeric(INCTOT),
     AGE = as.numeric(AGE),
     age_group = factor(age_group, levels = c("young", "middle", "older")),
-    educ_level = factor(
-      educ_level,
-      levels = c(
-        "N/A or no schooling",
-        "Nursery school to grade 4",
-        "Grade 5, 6, 7, or 8",
-        "Grade 9",
-        "Grade 10",
-        "Grade 11",
-        "Grade 12",
-        "1 year of college",
-        "2 years of college",
-        "3 years of college",
-        "4 years of college",
-        "5+ years of college"
-      )
-    ),
+    
     educ_level_grouped = case_when(
       educ_level %in% c(
         "N/A or no schooling",
