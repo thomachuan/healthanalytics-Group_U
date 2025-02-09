@@ -6,7 +6,7 @@ Project Overview This project investigates the relationship between working hour
 
 1. IPUMS series: We use the IPUMS USA dataset, which provides standardized individual-level information from the U.S. Census and American Community Survey. This dataset is well-suited for our analysis of working hours and fertility patterns among American women.
 
-2. Years: We analyze data from the 2023 Annual Social and Economic Supplement (ASEC). This recent timeframe allows us to examine current patterns of work-fertility relationships in the post-pandemic era.
+2. Years: We analyze data from the 2023. This recent timeframe allows us to examine current patterns of work-fertility relationships in the post-pandemic era.
 
 3. How to access the data: The data can be accessed from IPUMS USA at the following link:
 [https://usa.ipums.org/usa/](https://usa.ipums.org/usa-action/variables/group)
