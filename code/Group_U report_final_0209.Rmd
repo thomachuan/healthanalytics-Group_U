@@ -319,4 +319,114 @@ p7 <- ggplot(sampled_data, aes(x = AGE, y = NCHILD)) +
        y = "Number of Children")
 
 p7
+# Model Regression
+
+## model_a (no income, no age-square)
+
+```{r setup, include=True}
+
+# create poisson model
+model_a <- glm(NCHILD ~ UHRSWORK + AGE + 
+            EDUC_Medium + EDUC_High, 
+            family = poisson(link = "log"), 
+            data = data_cleaned)
+
+robust_se_a <- coeftest(model_a, vcov = vcovHC(model_a, type = "HC0")) #robust standard error
+
+# output model result
+stargazer(model_a, 
+          type = "text",
+          title = "Results -  Model A_Basic Model ",
+          digits = 3)
+
+summary(model_a)
+print(robust_se_a)
+pR2(model_a)
+pR2_a <- pR2(model_a)["McFadden"]
+print(pR2_a)
+
+# Residual Plots
+residuals <- data.frame(
+  Fitted = fitted(model_a),
+  Residuals = residuals(model_a)
+)
+
+
+ggplot(residuals, aes(x = Fitted, y = Residuals)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Residual Plot:  Basic model A",
+    x = "Fitted Values",
+    y = "Residuals"
+  )
+
+
+# Scatter Plot of Working Hours vs Number of Children
+ggplot(data_cleaned, aes(x = UHRSWORK, y = NCHILD)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm", color = "red") +
+  labs(x = "Weekly Work Hours", y = "Number of Children", 
+       title = "Relationship between Work Hours and Number of Children")
+
+```
+
+## model_b (add age-square)
+
+```{r setup, include=True}
+
+# scatter plot
+ggplot(data_cleaned, aes(x = UHRSWORK, y = NCHILD)) +
+  geom_point(alpha = 0.1) + 
+  geom_smooth(method = "lm", color = "red") +  
+  labs(title = "Relationship between Working Hours and Number of Children",
+       x = "Weekly Working Hours",
+       y = "Number of Children") +
+  theme_minimal()
+
+# create model with "AGE^2"
+model_b <- glm(NCHILD ~ UHRSWORK + AGE + I(AGE^2) + EDUC_Medium + EDUC_High, 
+               data = data_cleaned, 
+               family = poisson(link = "log"))
+
+robust_se_b <- coeftest(model_b, vcov = vcovHC(model_b, type = "HC0")) #robust standard error
+
+overdispersion_rate <- sum(residuals(model_b, type = "pearson")^2) / model_b$df.residual #overdispersion rate by calculating the ratio of the sum of squared Pearson residuals to the residual degrees of freedom
+
+# output model result
+stargazer(model_b, 
+          type = "text",
+          title = "Results -  Model B_Adding Nonlinearity in Age ",
+          digits = 3)
+
+# check distribution of education level
+print("Education Level Distribution:")
+print(table(data_cleaned$edu_level))
+
+# Residual Plots
+residuals <- data.frame(
+  Fitted = fitted(model_b),
+  Residuals = residuals(model_b)
+)
+
+ggplot(residuals, aes(x = Fitted, y = Residuals)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Residual Plot:  Model B_Adding Nonlinearity in Age ",
+    x = "Fitted Values",
+    y = "Residuals"
+  ) +
+  theme_minimal()
+
+# output summary
+print("Model Summary:")
+summary(model_b)
+print(robust_se_b)
+pR2(model_b)
+pR2_b <- pR2(model_b)["McFadden"]
+print(pR2_b)
+print(overdispersion_rate)
+```
+
 ```
