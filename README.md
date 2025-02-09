@@ -89,10 +89,11 @@ packages = c(
 5. Results visualization and interpretation
 
 ## === How to Run ===
+1. Data and code need to be saved in the same file
 
-1. Install required packages
+2. Install required packages
 
-2. Run the R markdown file
+3. Run the R markdown file
 
 ## === Results ===
 
