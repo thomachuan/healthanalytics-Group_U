@@ -13,10 +13,10 @@ Project Overview This project investigates the relationship between working hour
 
 3. Key Variables:
 
-a. Fertility measure: Number of own children in household (NCHILD)
-b. Working hours: Usual hours worked per week (UHRSWORK)
-c. Control variables: Age (AGE), Education (EDUC), Total income (INCTOT)
-d. Other variables: Sex (SEX), Educational attainment (EDUCD)
+    1. Fertility measure: Number of own children in household (NCHILD)
+    2. Working hours: Usual hours worked per week (UHRSWORK)
+    3. Control variables: Age (AGE), Education (EDUC), Total income (INCTOT)
+    4. Other variables: Sex (SEX), Educational attainment (EDUCD)
 
 ![image](https://github.com/user-attachments/assets/db297d36-1d34-472a-97be-44aca2939ee7)
 
