@@ -55,3 +55,195 @@ dag <- grViz("
 ")
 dag
 ```
+
+## Visualizing data before cleaning
+
+```{r setup, include=True}
+
+# 1. Depandent variable_number of children distribution
+p1 <- ggplot(data, aes(x = NCHILD)) +
+  geom_bar(fill = "skyblue") +
+  theme_minimal() +
+  labs(title = "Distribution of Number of Children",
+       x = "Number of Children",
+       y = "Count")
+
+# 2. Main indepandent variable_working hours distribution
+p2 <- ggplot(data, aes(x = UHRSWORK)) +
+  geom_histogram(binwidth = 5, fill = "lightgreen") +
+  theme_minimal() +
+  labs(title = "Distribution of Working Hours",
+       x = "Working Hours per Week",
+       y = "Count")
+
+# 3. Income distribution
+p3 <- ggplot(data, aes(x = INCTOT)) +
+  geom_histogram(fill = "pink") +
+  scale_x_log10() +  # consider income is distributed as right skewed
+  theme_minimal() +
+  labs(title = "Distribution of Income (log scale)",
+       x = "Income",
+       y = "Count")
+
+# 4. Age distribution
+p4 <- ggplot(data, aes(x = AGE)) +
+  geom_histogram(binwidth = 1, fill = "lightyellow") +
+  theme_minimal() +
+  labs(title = "Distribution of Age",
+       x = "Age",
+       y = "Count")
+
+# Combined graphs
+grid.arrange(p1, p2, p3, p4, ncol = 2)
+
+```
+
+## Data cleaning
+
+```{r setup, include=True}
+
+# check unprocessed data
+cat("\n=== summary unprocessed data ===\n")
+print("income summary：")
+summary(data$INCTOT)
+print("\n working hours summary：")
+summary(data$UHRSWORK)
+print("\n gender distribution：")
+table(data$SEX)
+print("\n age distribution：")
+summary(data$AGE)
+print("education summary：")
+summary(data$EDUC)
+
+# calculate IQR bounds for "UHRSWORK"
+Q1_work <- quantile(data$UHRSWORK, 0.25, na.rm = TRUE)
+Q3_work <- quantile(data$UHRSWORK, 0.75, na.rm = TRUE)
+IQR_work <- Q3_work - Q1_work
+lower_bound_work <- Q1_work - 1.5 * IQR_work
+upper_bound_work <- Q3_work + 1.5 * IQR_work
+
+# calculate IQR bounds for "INCTOT"
+Q1_inc <- quantile(data$INCTOT, 0.25, na.rm = TRUE)
+Q3_inc <- quantile(data$INCTOT, 0.75, na.rm = TRUE)
+IQR_inc <- Q3_inc - Q1_inc
+upper_bound_inc <- Q3_inc + 1.5 * IQR_inc
+
+# filter data using IQR method and keep only females
+data_cleaned <- data %>%
+  filter(!is.na(INCTOT)) %>%  #remove NA values
+ 
+  filter(INCTOT >= 0 & INCTOT < upper_bound_inc) %>%
+  #↑There are negative incomes existing if we use "greater than lower bounds" here, therefore we use "equal and greater than 0" instead
+  
+  filter(AGE >= 18 & AGE <= 49) %>%
+  filter(UHRSWORK > 0 & UHRSWORK <= upper_bound_work) %>%
+  filter(SEX == 2)
+
+# create log(income) and transfer EDUC to dummy variable
+data_cleaned <- data_cleaned %>%
+  mutate(
+    log_income = ifelse(INCTOT <= 0, NA, log(INCTOT)),
+    EDUC_Medium = ifelse(EDUC > 2 & EDUC <= 6, 1, 0),
+    EDUC_High = ifelse(EDUC > 6, 1, 0)
+  )
+  
+
+# check processed data
+cat("\n=== summary processed data ===\n")
+print("\n cleaned income summary：")
+summary(data_cleaned$INCTOT)
+print("\n cleaned working hours summary：")
+summary(data_cleaned$UHRSWORK)
+print("\n cleaned gender distribution：")
+table(data_cleaned$SEX)
+print("\n cleaned age distribution：")
+summary(data_cleaned$AGE)
+print("education summary：")
+summary(data$EDUC)
+
+# print boundaries
+cat("\n=== unusual bounds ===\n")
+cat("\nWork Hours bounds：")
+print(paste("Lower bounds:", round(lower_bound_work, 2)))
+print(paste("Upper bounds:", round(upper_bound_work, 2)))
+
+cat("\n Income bounds：")
+print(paste("Lower bound: 0"))
+print(paste("Upper bound:", round(upper_bound_inc, 2)))
+
+# check removed records
+cat("\n=== removed data summary ===\n")
+print(paste("Total removed records:", nrow(data) - nrow(data_cleaned)))
+print(paste("Total percentage removed:", round((nrow(data) - nrow(data_cleaned))/nrow(data)*100, 2), "%"))
+
+```
+
+## Data quality and missing value check
+
+```{r setup, include=True}
+count(data_cleaned, SEX) %>%
+  mutate(n = format(n, big.mark = ",", scientific = FALSE))
+
+na_count <- colSums(is.na(data))
+print(na_count)  # show NA values of each variable
+
+print("cleaned data")
+na_count <- colSums(is.na(data_cleaned))
+print(na_count)  # show NA values of each variable
+```
+
+## Visualizing data after cleaning
+
+```{r setup, include=True}
+
+# 1. Depandent variable_number of children distribution_after cleaning
+p1 <- ggplot(data_cleaned, aes(x = NCHILD)) +
+  geom_bar(fill = "skyblue") +
+  theme_minimal() +
+  labs(title = "Distribution of Number of Children_after cleaning",
+       x = "Number of Children",
+       y = "Count") +
+  theme(plot.title = element_text(size = 10))
+
+# 2. Main indepandent variable_working hours distribution
+p2 <- ggplot(data_cleaned, aes(x = UHRSWORK)) +
+  geom_histogram(binwidth = 5, fill = "lightgreen") +
+  theme_minimal() +
+  labs(title = "Distribution of Working Hours_after cleaning",
+       x = "Working Hours per Week",
+       y = "Count")+
+  theme(plot.title = element_text(size = 10))
+
+# 3. Income distribution
+p3 <- ggplot(data_cleaned, aes(x = INCTOT)) +
+  geom_histogram(fill = "pink") +
+  scale_x_log10() +  # consider income is distributed as right skewed
+  theme_minimal() +
+  labs(title = "Distribution of Income (log scale)_after cleaning",
+       x = "Income",
+       y = "Count")+
+  theme(plot.title = element_text(size = 10))
+
+# 4. Age distribution
+p4 <- ggplot(data_cleaned, aes(x = AGE)) +
+  geom_histogram(binwidth = 1, fill = "lightyellow") +
+  theme_minimal() +
+  labs(title = "Distribution of Age_after cleaning",
+       x = "Age",
+       y = "Count")+
+  theme(plot.title = element_text(size = 10))
+
+# Combined graphs
+grid.arrange(p1, p2, p3, p4, ncol = 2)
+
+```
+
+## Sampling design and weight variable processing
+
+```{r}
+
+data_cleaned <- data_cleaned %>%
+  mutate(weight = as.numeric(PERWT)) 
+
+design <- svydesign(ids = ~1, weights = ~weight, data = data_cleaned)
+```
