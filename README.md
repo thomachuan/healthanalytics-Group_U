@@ -1,52 +1,52 @@
-## Impact of Working Hours on Fertility Rate Analysis
+# Impact of Working Hours on Fertility Rate Analysis
 
 Project Overview This project investigates the relationship between working hours and fertility rates among women using R statistical analysis while controlling for various socioeconomic factors.
 
-### === Data Source ===
+## === Data Source ===
 
-IPUMS USA dataset
+1. IPUMS USA dataset
 
-Sample includes women aged 18-49
+2. Sample includes women aged 18-49
 
-Key variables: number of children, working hours, income, age, and education level
+3. Key variables: number of children, working hours, income, age, and education level
 
-# === Key Features ===
+## === Key Features ===
 
-Data Cleaning and Preprocessing
+### Data Cleaning and Preprocessing
 
-Outlier removal using IQR method
+1. Outlier removal using IQR method
 
-Missing value handling
+2. Missing value handling
 
-Variable transformation (log income)
+3. Variable transformation (log income)
 
-Education level categorization
+4. Education level categorization
 
-Statistical Analysis
+### Statistical Analysis
 
-Three progressive Poisson regression models:
+1. Three progressive Poisson regression models:
 
-Basic model (working hours + controls)
+2. Basic model (working hours + controls)
 
-Age-squared model (non-linear age effects)
+3. Age-squared model (non-linear age effects)
 
-Full model (including income)
+4. Full model (including income)
 
-Heterogeneity analysis
+5. Heterogeneity analysis
 
-Robust standard errors
+6. Robust standard errors
 
-Visualization
+### Visualization
 
-Distribution plots for key variables
+1. Distribution plots for key variables
 
-Residual diagnostics
+2. Residual diagnostics
 
-Relationship plots between variables
+3. Relationship plots between variables
 
-=== Requirements ===
+## === Requirements ===
 
-Required R packages:
+### Required R packages:
 
 {r setup}
 packages = c(
@@ -76,38 +76,36 @@ packages = c(
 )
 
 
-=== Project Structure ===
+## === Project Structure ===
 
-Data preprocessing
+1. Data preprocessing
 
-Exploratory data analysis
+2. Exploratory data analysis
 
-Model development and comparison
+3. Model development and comparison
 
-Heterogeneity analysis
+4. Heterogeneity analysis
 
-Results visualization and interpretation
+5. Results visualization and interpretation
 
-=== How to Run ===
+## === How to Run ===
 
-Set working directory to data location
+1. Install required packages
 
-Install required packages
+2. Run the R markdown file
 
-Run the R markdown file
+## === Results ===
 
-=== Results ===
+### The analysis includes:
 
-The analysis includes:
+1. Descriptive statistics
 
-Descriptive statistics
+2. Model comparisons with R² values Visualization of relationships
 
-Model comparisons with R² values Visualization of relationships
+3. Residual diagnostics
 
-Residual diagnostics
+4. Heterogeneity tests
 
-Heterogeneity tests
-
-=== Contact ===
+## === Contact ===
 
 Group_U
