@@ -428,5 +428,126 @@ pR2_b <- pR2(model_b)["McFadden"]
 print(pR2_b)
 print(overdispersion_rate)
 ```
+## model_c (add "income")
+```{r setup, include=True}
+# scatter plot
+ggplot(data_cleaned, aes(x = UHRSWORK, y = NCHILD)) +
+  geom_point(alpha = 0.1) +  
+  geom_smooth(method = "lm", color = "red") + 
+  labs(title = "Relationship between Working Hours and Number of Children",
+       x = "Weekly Working Hours",
+       y = "Number of Children") +
+  theme_minimal()
+
+
+
+# create the model with "log(income) based on model_b
+model_c <- glm(NCHILD ~ UHRSWORK + AGE + I(AGE^2) +  log_income + EDUC_Medium + EDUC_High, 
+               data = data_cleaned, 
+               family = poisson(link = "log"))
+#robust se
+robust_se_c <- coeftest(model_c, vcov = vcovHC(model_c, type = "HC0")) #robust standard error
+
+
+# output result
+stargazer(model_c, 
+          type = "text",
+          title = "Regression Results -  Model C_Testing for Mediation by Income",
+          digits = 3)
+
+# check distribution of education level
+print("Education Level Distribution:")
+print(table(data_cleaned$edu_level))
+
+# residual plot
+residuals <- data.frame(
+  Fitted = fitted(model_c),
+  Residuals = residuals(model_c)
+)
+
+ggplot(residuals, aes(x = Fitted, y = Residuals)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Residual Plot: Model C_Testing for Mediation by Income",
+    x = "Fitted Values",
+    y = "Residuals"
+  ) +
+  theme_minimal()
+
+# summary model
+print("Model Summary:")
+summary(model_c)
+print(robust_se_c)
+pR2(model_c)
+pR2_c <- pR2(model_c)["McFadden"]
+print(pR2_c)
 
 ```
+
+## Comparison for Three Models
+
+```{r setup, include=TRUE}
+
+# list models
+models <- list(
+  "Model_basic" = model_a,
+  "Model_age-square" = model_b,
+  "Model_with_income" = model_c
+)
+
+# create a new row
+new_row <- tibble(
+  term = "R²",
+  `Model_basic` = sprintf("%.3f", pR2(model_a)["McFadden"]),
+  `Model_age-square` = sprintf("%.3f", pR2(model_b)["McFadden"]),
+  `Model_with_income` = sprintf("%.3f", pR2(model_c)["McFadden"])
+)
+
+modelsummary(models, 
+             estimate = "estimate",
+             statistic = "({std.error})", 
+             stars = TRUE,
+             coef_rename = c(
+               "UHRSWORK" = "Working Hours",
+               "AGE" = "Age",
+               "I(AGE^2)" = "Age Squared",
+               "edu_levelMedium" = "Education: Medium",
+               "edu_levelHigh" = "Education: High",
+               "INCWAGE" = "Income"
+             ),
+             add_rows = new_row,
+             title = 'Impact of Working Hours on Fertility: Model Comparison')
+
+```
+
+## **Heterogeneity Test**
+
+```{r setup, include=True}
+
+#interaction model
+model_interaction <- glm(NCHILD ~ UHRSWORK * EDUC_Medium + UHRSWORK * EDUC_High + AGE + I(AGE^2), 
+                         data = data_cleaned, family = poisson(link = "log"))
+
+robust_se_interaction <- coeftest(model_interaction, vcov = vcovHC(model_interaction, type = "HC0"))
+summary(model_interaction)
+pR2(model_interaction)
+
+# residual plot
+residuals_interaction <- data.frame(
+  Fitted_interaction = fitted(model_interaction),
+  Residuals_interaction = residuals(model_interaction)
+)
+ggplot(residuals_interaction, aes(x =  Fitted_interaction, y = Residuals_interaction)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Residual Plot: model_interaction",
+    x = "Fitted Values",
+    y = "Residuals"
+  ) +
+  theme_minimal()
+
+
+```
+
