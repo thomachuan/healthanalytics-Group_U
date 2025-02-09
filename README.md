@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/b159e258-4238-4ff4-b8d1-3c002b1248fa)# Impact of Working Hours on Fertility Rate Analysis
+# Impact of Working Hours on Fertility Rate Analysis
 
 Project Overview This project investigates the relationship between working hours and fertility rates among women using R statistical analysis while controlling for various socioeconomic factors.
 
