@@ -1,14 +1,26 @@
-# Impact of Working Hours on Fertility Rate Analysis
+![image](https://github.com/user-attachments/assets/b159e258-4238-4ff4-b8d1-3c002b1248fa)# Impact of Working Hours on Fertility Rate Analysis
 
 Project Overview This project investigates the relationship between working hours and fertility rates among women using R statistical analysis while controlling for various socioeconomic factors.
 
-## === Data Source ===
+## === Description of Data ===
 
-1. IPUMS USA dataset
+1. IPUMS series: We use the IPUMS USA dataset, which provides standardized individual-level information from the U.S. Census and American Community Survey. This dataset is well-suited for our analysis of working hours and fertility patterns among American women.
 
-2. Sample includes women aged 18-49
+2. Years: We analyze data from the 2023 Annual Social and Economic Supplement (ASEC). This recent timeframe allows us to examine current patterns of work-fertility relationships in the post-pandemic era.
 
-3. Key variables: number of children, working hours, income, age, and education level
+3. How to access the data: The data can be accessed from IPUMS USA at the following link:
+[https://usa.ipums.org/usa/](https://usa.ipums.org/usa-action/variables/group)
+
+3. Key Variables:
+
+a. Fertility measure: Number of own children in household (NCHILD)
+b. Working hours: Usual hours worked per week (UHRSWORK)
+c. Control variables: Age (AGE), Education (EDUC), Total income (INCTOT)
+d. Other variables: Sex (SEX), Educational attainment (EDUCD)
+
+![image](https://github.com/user-attachments/assets/db297d36-1d34-472a-97be-44aca2939ee7)
+
+
 
 ## === Key Features ===
 
