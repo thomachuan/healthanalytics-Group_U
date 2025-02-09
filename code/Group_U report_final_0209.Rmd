@@ -1,0 +1,57 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load Required Packages
+
+```{r include=FALSE, results='hide'}
+packages = (c("ipumsr", "dplyr", "ggplot2", "tidyr", "here", "rmdformats", "srvyr", "DiagrammeR", "gridExtra", "survey", "Matrix", "haven", "gtsummary", "pscl","lmtest", "sandwich","zoo","stargazer","gt","modelsummary", "here"))
+
+## Now load or install&load all
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+```
+
+# Data
+
+## Data Import and Initial Inspection
+
+```{r setup, include=True}
+#set working documents
+current_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
+
+#read data
+ddi <- read_ipums_ddi(file.path(current_dir, "usa_00007.xml"))
+data <- read_ipums_micro(ddi, data_file = file.path(current_dir, "usa_00007.dat"))
+
+#check first 4 rows
+head(data)
+
+count(data,SEX) %>%
+  mutate(n = format(n, big.mark = ",", scientific = FALSE))
+
+names(data)
+```
+
+## Causal Relationship Visualization (**DAGs)**
+
+```{r setup, include=True}
+
+dag <- grViz("
+  digraph DAG {
+   age -> fertility
+   age -> workinghours
+   education -> fertility
+   education -> workinghours
+   workinghours -> income -> fertility
+  }
+")
+dag
+```
