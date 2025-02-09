@@ -247,3 +247,76 @@ data_cleaned <- data_cleaned %>%
 
 design <- svydesign(ids = ~1, weights = ~weight, data = data_cleaned)
 ```
+## Data conversion and descriptive statistics table
+
+```{r setup, include=True}
+
+data_cleaned <- data_cleaned %>%
+  mutate(
+    UHRSWORK = as.numeric(unlist(UHRSWORK)),
+    INCTOT = as.numeric(unlist(INCTOT)),
+    AGE = as.numeric(unlist(AGE)),
+    # create age_groups
+    age_group = case_when(
+      AGE < 30 ~ "young",
+      AGE < 40 ~ "middle",
+      TRUE ~ "older"
+    ),
+    age_group = factor(age_group, levels = c("young", "middle", "older")),
+    # create education level groups
+    EDUC = as.numeric(unlist(EDUC)),
+    EDUC_Medium = ifelse(EDUC > 2 & EDUC <= 6, 1, 0),
+    EDUC_High = ifelse(EDUC > 6, 1, 0),
+    # factor education level
+    education = case_when(
+      EDUC <= 2 ~ "Low",
+      EDUC > 2 & EDUC <= 6 ~ "Medium",
+      EDUC > 6 ~ "High"
+    ),
+    education = factor(education, levels = c("Low", "Medium", "High"))
+  )
+
+# output descriptive table
+summary_table <- data_cleaned %>%
+  tbl_summary(
+    include = c(UHRSWORK, INCTOT, AGE, education),
+    by = age_group,
+    label = list(
+      UHRSWORK ~ "Weekly working hours",
+      INCTOT ~ "Income",
+      AGE ~ "Age",
+      education ~ "Education Level"
+    ),
+    statistic = list(all_continuous() ~ "{mean} ({sd})"),
+    digits = list(all_continuous() ~ 2)
+  ) %>%
+  add_p() %>%
+  add_overall() %>%
+  modify_header(label ~ "**Characteristic**") %>%
+  modify_footnote(
+    all_stat_cols() ~ "Mean (SD); n (%)"
+  )
+
+# show table
+summary_table
+```
+
+## Relationship between fertility and age (non-linear)
+
+```{r setup, include=True}
+# 1. sampling data
+set.seed(123)
+sample_size <- min(10000, nrow(data_cleaned))
+sampled_data <- data[sample(nrow(data_cleaned), sample_size), ]
+
+# 2. plot by using sampling data set
+p7 <- ggplot(sampled_data, aes(x = AGE, y = NCHILD)) +
+  geom_point(alpha = 0.1) +
+  geom_smooth(method = "loess", color = "red") +
+  theme_minimal() +
+  labs(title = "Age vs Number of Children",
+       x = "Age",
+       y = "Number of Children")
+
+p7
+```
