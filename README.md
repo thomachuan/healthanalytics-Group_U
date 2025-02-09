@@ -2,7 +2,7 @@
 
 Project Overview This project investigates the relationship between working hours and fertility rates among women using R statistical analysis while controlling for various socioeconomic factors.
 
-=== Data Source ===
+# === Data Source ===
 
 IPUMS USA dataset
 
@@ -10,7 +10,7 @@ Sample includes women aged 18-49
 
 Key variables: number of children, working hours, income, age, and education level
 
-=== Key Features ===
+# === Key Features ===
 
 Data Cleaning and Preprocessing
 
